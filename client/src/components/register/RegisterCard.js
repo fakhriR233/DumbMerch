@@ -6,7 +6,6 @@ import Row from 'react-bootstrap/Row';
 import Card from 'react-bootstrap/Card';
 import { Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom';
 import { useMutation } from 'react-query';
 
 import { API } from '../../config/api';
@@ -38,7 +37,7 @@ function RegisterCard() {
     try {
       e.preventDefault();
 
-      // Configuration Content-type
+      // Configure Content-type
       const config = {
         headers: {
           'Content-type': 'application/json',
@@ -52,6 +51,20 @@ function RegisterCard() {
       const response = await API.post('/register', body, config);
 
       // Handling response here
+      if(response.status === "Success") {
+        const alert = (
+          <Alert variant='success' className='py-1'>
+            Success
+          </Alert>
+        );
+        setMessage(alert)
+        setForm({
+          name: "",
+          email: "",
+          password: "",
+        })
+      }
+
     } catch (error) {
       const alert = (
         <Alert variant="danger" className="py-1">

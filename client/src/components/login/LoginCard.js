@@ -34,6 +34,7 @@ function LoginCard({}) {
   };
 
   const handleSubmit = useMutation(async e => {
+    
     try {
       e.preventDefault();
 
@@ -50,6 +51,8 @@ function LoginCard({}) {
       // Insert data user to database
       const response = await API.post('/login', body, config);
 
+      console.log(response);
+
       if (response.status === 200) {
         dispatch({
           type: 'LOGIN_SUCCESS',
@@ -57,24 +60,41 @@ function LoginCard({}) {
         });
       }
 
-      if (response.data.data.status === 'admin') {
+      if (response.data.data.user.status === 'admin') {
         navigate('/ListCategory');
       } else {
         navigate('/HomeScreen');
       }
 
-      setMessage('Login Success');
-
+      if(response.status === 400)  {
+        const alert = (
+          <Alert variant='danger' className='py-1'>
+            {response.error.message}
+          </Alert>
+        );
+        setMessage(alert)
+      }
       // Handling response here
+
     } catch (error) {
-      const alert = (
-        <Alert variant="danger" className="py-1">
-          Failed
-        </Alert>
-      );
-      setMessage(alert);
-      console.log(error);
-    }
+      if (error.response.data.status === "Failed") {
+        const alert = (
+          <Alert variant="danger" className="py-1">
+            {error.response.data.message}
+          </Alert>
+        );
+        setMessage(alert);
+        console.log(error);
+      } else {
+        const alert = (
+          <Alert variant="danger" className="py-1">
+            {error.response.data.error.message}
+          </Alert>
+        );
+        setMessage(alert);
+        console.log(error);
+      }
+    } 
   });
 
   return (

@@ -8,4 +8,4 @@ added env for Token.
 
 auth and multer image middleware for routes is done (multer only for product, transaction is not yet added).
 
-multer image is done.
+COMBINED NOW.

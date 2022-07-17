@@ -52,7 +52,7 @@ exports.register = async (req, res) => {
 
     //jwt token generate
     // const tokenKey = "supersecretkey"
-    const token = jwt.sign({ id: newUser.id }, process.env.TOKEN_KEY);
+    const token = jwt.sign({ id: Users.id }, process.env.TOKEN_KEY);
 
     res.status(201).send({
       status: 'Success',
@@ -96,11 +96,6 @@ exports.login = async (req, res) => {
       },
     });
 
-    const passCheck = await bcrypt.compare(
-      req.body.password,
-      checkUser.password
-    );
-
     if (!checkUser) {
       return res.status(400).send({
         status: 'Failed',
@@ -108,6 +103,18 @@ exports.login = async (req, res) => {
       });
     }
 
+    const passCheck = await bcrypt.compare(
+      req.body.password,
+      checkUser.password
+    );
+
+    // if (checkUser.password === null) {
+    //   return res.status(400).send({
+    //     status: 'Failed',
+    //     message: "User DOesn't Exist!"
+    //   })
+    // }
+    
     if (!passCheck) {
       return res.status(400).send({
         status: 'Failed',
@@ -129,6 +136,7 @@ exports.login = async (req, res) => {
         user: {
           name: checkUser.name,
           email: checkUser.email,
+          status: checkUser.status,
           token,
         },
       },

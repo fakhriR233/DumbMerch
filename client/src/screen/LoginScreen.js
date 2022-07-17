@@ -14,7 +14,7 @@ function Login() {
   const checkAuth = () => {
     if (state.isLogin === true) {
       navigate('/HomeScreen');
-    }
+    } 
   };
   checkAuth();
 
