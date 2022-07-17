@@ -3,29 +3,90 @@ import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import Card from 'react-bootstrap/Card';
-import { useState, useEffect } from 'react';
+import { Alert } from 'react-bootstrap';
+import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-function LoginCard({ checkUser }) {
-  // const [email, setEmail] = useState(null);
-  // const isLogin = true;
-  // // const [pass, setPass] = useState('');
+import { useMutation } from 'react-query';
+
+import { API } from '../../config/api';
+import { UserContext } from '../../context/userContext';
+
+function LoginCard({}) {
   const navigate = useNavigate();
 
-  function whoIsUser() {
-    if (checkUser === 'false') {
-      navigate('/HomeScreen');
-    } else {
-      navigate('/ListCategory');
+  const [state, dispatch] = useContext(UserContext);
+
+  const [form, setForm] = useState({
+    email: '',
+    password: '',
+  });
+
+  const { email, password } = form;
+
+  const [message, setMessage] = useState(null);
+
+  const handleChange = e => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = useMutation(async e => {
+    try {
+      e.preventDefault();
+
+      // Configuration Content-type
+      const config = {
+        headers: {
+          'Content-type': 'application/json',
+        },
+      };
+
+      // Data body
+      const body = JSON.stringify(form);
+
+      // Insert data user to database
+      const response = await API.post('/login', body, config);
+
+      if (response.status === 200) {
+        dispatch({
+          type: 'LOGIN_SUCCESS',
+          payload: response.data.data,
+        });
+      }
+
+      if (response.data.data.status === 'admin') {
+        navigate('/ListCategory');
+      } else {
+        navigate('/HomeScreen');
+      }
+
+      setMessage('Login Success');
+
+      // Handling response here
+    } catch (error) {
+      const alert = (
+        <Alert variant="danger" className="py-1">
+          Failed
+        </Alert>
+      );
+      setMessage(alert);
+      console.log(error);
     }
-  }
+  });
 
   return (
     <Card style={styles.LoginCard}>
+      {message && message}
       <div>
         <div className="container h-100">
           <div className="p-3">
-            <Form className="row align-items-center">
+            <Form
+              className="row align-items-center"
+              onSubmit={e => handleSubmit.mutate(e)}
+            >
               <Row className="mb-3 w-100">
                 <Card.Title
                   className="mt-4 mb-4"
@@ -42,6 +103,8 @@ function LoginCard({ checkUser }) {
                       <Form.Control
                         type="email"
                         placeholder="Enter email"
+                        name="email"
+                        onChange={handleChange}
                       />
                     </Form.Group>
 
@@ -52,11 +115,13 @@ function LoginCard({ checkUser }) {
                       <Form.Control
                         type="password"
                         placeholder="Password"
+                        name="password"
+                        onChange={handleChange}
                       />
                     </Form.Group>
                     <div>
                       <Button
-                        onClick={whoIsUser}
+                        type="submit"
                         variant="danger"
                         className="w-100 mt-4"
                       >

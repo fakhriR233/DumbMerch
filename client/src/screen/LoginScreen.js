@@ -4,9 +4,20 @@ import LoginButton from '../components/login/button/LoginButton';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useContext, useEffect } from 'react';
+import { UserContext } from '../context/userContext';
 
-function Login(props) {
+function Login() {
+  let navigate = useNavigate();
+  const [state] = useContext(UserContext);
+
+  const checkAuth = () => {
+    if (state.isLogin === true) {
+      navigate('/HomeScreen');
+    }
+  };
+  checkAuth();
+
   return (
     <div>
       <div style={styles.LoginScreen}>
@@ -16,7 +27,7 @@ function Login(props) {
             <LoginButton />
           </Col>
           <Col lg={4}>
-            <LoginCard checkUser={props.isAdmin} />
+            <LoginCard />
           </Col>
         </Row>
       </div>
