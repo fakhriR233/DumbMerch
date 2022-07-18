@@ -22,6 +22,8 @@ import {
 
 import { API, setAuthToken } from './config/api';
 import { UserContext } from './context/userContext';
+import AddCategory from './components/adminCategoryProduct/AddCategory';
+import AddProductList from './components/adminProductList/AddProductList';
 
 if (localStorage.token) {
   setAuthToken(localStorage.token);
@@ -96,8 +98,18 @@ function App() {
           />
           <Route
             exact
+            path="/AddProduct"
+            element={<AddProductList />}
+          />
+          <Route
+            exact
             path="/EditCategory"
             element={<EditCategoryScreen />}
+          />
+          <Route
+            exact
+            path="/AddCategory"
+            element={<AddCategory />}
           />
           <Route
             exact

@@ -6,12 +6,16 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Col, Row } from "react-bootstrap";
 
 const TableListProduct = () => {
-  const Navigate = useNavigate()
+  const navigate = useNavigate()
   const [show, setShow] = useState(false);
 
   const handleClose = () => setShow(false);
-  const handleSave = () => {setShow(false); Navigate('/ListProduct')};
+  const handleSave = () => {setShow(false); navigate('/ListProduct')};
   const handleShow = () => setShow(true);
+
+  const addProduct = () => {
+    navigate('/AddProduct');
+  };
 
   return (
     <div>
@@ -42,7 +46,7 @@ const TableListProduct = () => {
           </Col>
           <Col className="text-end">
             <Button
-              // onClick={addCategory}
+              onClick={addProduct}
               className="btn-dark"
               style={{ width: '150px' }}
             >
