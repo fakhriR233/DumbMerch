@@ -4,6 +4,7 @@ import Modal from 'react-bootstrap/Modal';
 import Button from "react-bootstrap/Button";
 import { Link, useNavigate } from 'react-router-dom'
 import { Col, Row } from "react-bootstrap";
+import { home } from '../../dataDummy'; 
 
 const TableListProduct = () => {
   const navigate = useNavigate()
@@ -53,6 +54,7 @@ const TableListProduct = () => {
               New Product
             </Button>
         </Col>
+        {home?.length !== 0 ? (
           <Table className="mt-2" variant="dark" bordered hover style={{ color: "white" }}>
             <thead>
               <tr>
@@ -66,13 +68,36 @@ const TableListProduct = () => {
               </tr>
             </thead>
             <tbody>
+              {home?.map((item, index) => (
               <tr>
                 <td>1</td>
-                <td>Photo</td>
-                <td>Mouse</td>
-                <td>Lorem Ipsu Dolor sit amet</td>
-                <td>500.000</td>
-                <td>600</td>
+                <td>
+                  <img 
+                   src={item.image}
+                   style={{
+                     width: '80px',
+                     height: '80px',
+                     objectFit: 'cover',
+                   }}
+                   alt={item.name}
+                  />
+                </td>
+                <td>{item.name}</td>
+                <td>
+                  <ShowMoreText
+                    /* Default options */
+                    lines={1}
+                    more="show"
+                    less="hide"
+                    className="content-css"
+                    anchorClass="my-anchor-css-class"
+                    expanded={false}
+                    width={280}>
+                      {item.desc}
+                  </ShowMoreText>
+                </td>
+                <td>Rp. {item.price}</td>
+                <td>{item.qty}</td>
                 <td className="d-flex">
                   <div>
                     <Link to="/EditProduct">
@@ -88,8 +113,14 @@ const TableListProduct = () => {
                   </div>
                 </td>
               </tr>
+              ))}
             </tbody>
           </Table>
+        ) : (
+        <div className="text-center pt-5">
+        <div className="mt-3">No data product</div>
+      </div>
+      )}
         </Row>
       </div>
     </div>
