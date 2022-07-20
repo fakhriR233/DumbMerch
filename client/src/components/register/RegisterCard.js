@@ -1,23 +1,23 @@
-import { useContext, useState } from 'react';
-import Button from 'react-bootstrap/Button';
-import Col from 'react-bootstrap/Col';
-import Form from 'react-bootstrap/Form';
-import Row from 'react-bootstrap/Row';
-import Card from 'react-bootstrap/Card';
-import { Alert } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
-import { useMutation } from 'react-query';
+import { useContext, useState } from "react";
+import Button from "react-bootstrap/Button";
+import Col from "react-bootstrap/Col";
+import Form from "react-bootstrap/Form";
+import Row from "react-bootstrap/Row";
+import Card from "react-bootstrap/Card";
+import { Alert } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+import { useMutation } from "react-query";
 
-import { API } from '../../config/api';
-import { UserContext } from '../../context/userContext';
+import { API } from "../../config/api";
+import { UserContext } from "../../context/userContext";
 
 function RegisterCard() {
   let navigate = useNavigate();
 
   const [form, setForm] = useState({
-    name: '',
-    email: '',
-    password: '',
+    name: "",
+    email: "",
+    password: "",
   });
 
   const { name, email, password } = form;
@@ -26,21 +26,21 @@ function RegisterCard() {
 
   const [message, setMessage] = useState(null);
 
-  const handleChange = e => {
+  const handleChange = (e) => {
     setForm({
       ...form,
       [e.target.name]: e.target.value,
     });
   };
 
-  const handleSubmit = useMutation(async e => {
+  const handleSubmit = useMutation(async (e) => {
     try {
       e.preventDefault();
 
       // Configure Content-type
       const config = {
         headers: {
-          'Content-type': 'application/json',
+          "Content-type": "application/json",
         },
       };
 
@@ -48,23 +48,24 @@ function RegisterCard() {
       const body = JSON.stringify(form);
 
       // Insert data user to database
-      const response = await API.post('/register', body, config);
+      const response = await API.post("/register", body, config);
+
+      console.log(response);
 
       // Handling response here
-      if(response.status === "Success") {
+      if (response.data.status === "Success") {
         const alert = (
-          <Alert variant='success' className='py-1'>
-            Success
+          <Alert variant="success" className="py-1">
+            Register Success
           </Alert>
         );
-        setMessage(alert)
+        setMessage(alert);
         setForm({
           name: "",
           email: "",
           password: "",
-        })
+        });
       }
-
     } catch (error) {
       const alert = (
         <Alert variant="danger" className="py-1">
@@ -84,21 +85,15 @@ function RegisterCard() {
           <div className="p-3">
             <Form
               className="row align-items-center"
-              onSubmit={e => handleSubmit.mutate(e)}
+              onSubmit={(e) => handleSubmit.mutate(e)}
             >
               <Row className="mb-3 w-100">
-                <Card.Title
-                  className="mt-4 mb-4"
-                  style={styles.label}
-                >
+                <Card.Title className="mt-4 mb-4" style={styles.label}>
                   Register
                 </Card.Title>
                 <Card.Body>
                   <Col>
-                    <Form.Group
-                      className="mb-3"
-                      controlId="formGridName"
-                    >
+                    <Form.Group className="mb-3" controlId="formGridName">
                       <Form.Control
                         type="text"
                         placeholder="Enter name"
@@ -108,10 +103,7 @@ function RegisterCard() {
                       />
                     </Form.Group>
 
-                    <Form.Group
-                      className="mb-3"
-                      controlId="formGridEmail"
-                    >
+                    <Form.Group className="mb-3" controlId="formGridEmail">
                       <Form.Control
                         type="email"
                         placeholder="Enter email"
@@ -121,10 +113,7 @@ function RegisterCard() {
                       />
                     </Form.Group>
 
-                    <Form.Group
-                      className="mb-3"
-                      controlId="formGridPassword"
-                    >
+                    <Form.Group className="mb-3" controlId="formGridPassword">
                       <Form.Control
                         type="password"
                         placeholder="Password"
@@ -155,14 +144,14 @@ function RegisterCard() {
 
 const styles = {
   label: {
-    color: 'white',
-    fontSize: '40px',
-    textAlign: 'start',
+    color: "white",
+    fontSize: "40px",
+    textAlign: "start",
   },
   LoginCard: {
-    width: '28rem',
-    borderRadius: '14px',
-    backgroundColor: '#181818',
+    width: "28rem",
+    borderRadius: "14px",
+    backgroundColor: "#181818",
   },
 };
 

@@ -1,9 +1,9 @@
-import React, { useContext } from 'react';
-import Logo from '../assets/images/Frame.png';
-import Nav from 'react-bootstrap/Nav';
-import Navbar from 'react-bootstrap/Navbar';
-import { useNavigate } from 'react-router-dom';
-import { UserContext } from '../context/userContext';
+import React, { useContext } from "react";
+import Logo from "../assets/images/Frame.png";
+import Nav from "react-bootstrap/Nav";
+import Navbar from "react-bootstrap/Navbar";
+import { useNavigate } from "react-router-dom";
+import { UserContext } from "../context/userContext";
 
 const AdminHeader = () => {
   const [state, dispatch] = useContext(UserContext);
@@ -13,18 +13,18 @@ const AdminHeader = () => {
   function logoutHandler() {
     console.log(state);
     dispatch({
-      type: 'LOGOUT',
+      type: "LOGOUT",
     });
-    Navigate('/');
+    Navigate("/");
   }
   function complainHandler() {
-    Navigate('/Complain');
+    Navigate("/ComplainAdmin");
   }
   function categoryHandler() {
-    Navigate('/ListCategory');
+    Navigate("/ListCategory");
   }
   function productHandler() {
-    Navigate('/ListProduct');
+    Navigate("/ListProduct");
   }
 
   return (
@@ -33,40 +33,24 @@ const AdminHeader = () => {
         collapseOnSelect
         expand="lg"
         variant="dark"
-        style={{ color: 'white' }}
+        style={{ color: "white" }}
       >
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="me-auto ms-5">
-            <img
-              src={Logo}
-              alt="Dumbmerch Logo"
-              style={Styles.LogoSize}
-            />
+            <img src={Logo} alt="Dumbmerch Logo" style={Styles.LogoSize} />
           </Nav>
           <Nav className="me-5">
             <Nav.Link className="mx-3" onClick={complainHandler}>
               Complain
             </Nav.Link>
-            <Nav.Link
-              className="mx-3"
-              eventKey={2}
-              onClick={categoryHandler}
-            >
+            <Nav.Link className="mx-3" eventKey={2} onClick={categoryHandler}>
               Category
             </Nav.Link>
-            <Nav.Link
-              className="mx-3"
-              eventKey={2}
-              onClick={productHandler}
-            >
+            <Nav.Link className="mx-3" eventKey={2} onClick={productHandler}>
               Product
             </Nav.Link>
-            <Nav.Link
-              className="mx-3"
-              eventKey={3}
-              onClick={logoutHandler}
-            >
+            <Nav.Link className="mx-3" eventKey={3} onClick={logoutHandler}>
               Logout
             </Nav.Link>
           </Nav>
@@ -78,8 +62,8 @@ const AdminHeader = () => {
 
 const Styles = {
   LogoSize: {
-    width: '70px',
-    margin: '15px',
+    width: "70px",
+    margin: "15px",
   },
 };
 
