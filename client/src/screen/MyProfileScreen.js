@@ -6,6 +6,9 @@ import MyTransaction from "../components/Profile/MyTransaction";
 import Header from "../components/Header";
 
 function MyProfileScreen() {
+  const title = "Profile";
+  document.title = "DumbMerch | " + title;
+
   return (
     <div>
       <Header />

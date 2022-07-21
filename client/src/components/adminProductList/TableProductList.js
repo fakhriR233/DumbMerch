@@ -58,7 +58,7 @@ const TableListProduct = () => {
         <Row>
           <Col>
             <h2 style={{ color: "white" }} className="mb-3">
-              List Product
+              List Category
             </h2>
           </Col>
           <Col className="text-end">

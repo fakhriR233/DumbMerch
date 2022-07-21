@@ -73,6 +73,8 @@ exports.addProduct = async (req, res) => {
       idUser: req.Users.id,
     };
 
+    let newProduct = await products.create(data);
+
     if (categoryId) {
       const productCategoryData = categoryId.map((item) => {
         return { idProduct: newProduct.id, idCategory: parseInt(item) };
@@ -80,12 +82,6 @@ exports.addProduct = async (req, res) => {
 
       await productCategory.bulkCreate(productCategoryData);
     }
-
-    let newProduct = await products.create({
-      ...data,
-      image: req.file.filename,
-      idUser: req.Users.id,
-    });
 
     let productData = await product.findOne({
       where: {
@@ -103,7 +99,7 @@ exports.addProduct = async (req, res) => {
           model: category,
           as: "categories",
           through: {
-            model: productCategory,
+            model: "product-category",
             as: "bridge",
             attributes: [],
           },
@@ -130,7 +126,7 @@ exports.addProduct = async (req, res) => {
     console.log(error);
     res.status(400).send({
       status: "Failed",
-      message: "Server error, can't show all Products",
+      message: "Server error, can't add new Product",
     });
   }
 };
@@ -139,22 +135,55 @@ exports.showProduct = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const showSomeProduct = await products.findAll({
+    let data = await products.findOne({
       where: { id },
+      include: [
+        {
+          model: Users,
+          as: "Users",
+          attributes: {
+            exclude: ["createdAt", "updatedAt", "password"],
+          },
+        },
+        {
+          model: category,
+          as: "categories",
+          through: {
+            model: productCategory,
+            as: "bridge",
+            attributes: [],
+          },
+          attributes: {
+            exclude: ["createdAt", "updatedAt"],
+          },
+        },
+      ],
+      attributes: {
+        exclude: ["createdAt", "updatedAt", "idUser"],
+      },
     });
+
+    data = JSON.parse(JSON.stringify(data));
+
+    //console.log(data);
+
+    data = {
+      ...data,
+      image: process.env.PATH_FILE + data.image,
+    };
 
     res.send({
       status: "Success",
-      message: `Showing Product Detail with id : ${id}`,
+      message: `Showing Product Detail with id`,
       data: {
-        product: showSomeProduct,
+        product: data,
       },
     });
   } catch (error) {
     console.log(error);
-    res.send({
+    res.status(400).send({
       status: "Failed!",
-      message: `Server Error, Failed to show product with id : ${id}`,
+      message: `Server Error, Failed to show product with id`,
     });
   }
 };
