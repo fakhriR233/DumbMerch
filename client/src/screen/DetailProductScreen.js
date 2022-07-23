@@ -19,11 +19,11 @@ const DetailProductScreen = () => {
 
   let { data: product } = useQuery("productCache", async () => {
     const response = await API.get("/product/" + id);
-    console.log(response.data.data);
+    //console.log(response.data.data);
     return response.data.data.product;
   });
 
-  console.log(product);
+  //console.log(product);
 
   const handleBuy = useMutation(async (e) => {
     try {
@@ -37,7 +37,7 @@ const DetailProductScreen = () => {
 
       const data = {
         idProduct: product.id,
-        idSeller: product.user.id,
+        idSeller: product.Users.id,
         price: product.price,
       };
 
@@ -86,7 +86,11 @@ const DetailProductScreen = () => {
                     </p>
                   </div>
                   <div className="d-flex justify-content-md-end mt-auto">
-                    <Button variant="danger" className="p-2 w-100">
+                    <Button
+                      onClick={(e) => handleBuy.mutate(e)}
+                      variant="danger"
+                      className="p-2 w-100"
+                    >
                       Buy
                     </Button>
                     <Link to="/CompareProduct">

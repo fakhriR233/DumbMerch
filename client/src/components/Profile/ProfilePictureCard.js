@@ -20,7 +20,9 @@ const ProfilePictureCard = () => {
   return (
     <div style={{ color: "white" }}>
       <div className="my-3 mx-3 p-3">
-        <h2 className="mx-4">My Profile</h2>
+        <h2 className="mx-4" style={{ color: "red" }}>
+          My Profile
+        </h2>
         <div className="d-flex mx-4 mt-4" style={{ height: "97vh" }}>
           <div>
             <div className="me-3">
@@ -38,7 +40,7 @@ const ProfilePictureCard = () => {
           <div>
             <div>
               <p style={textRed}> NAMA</p>
-              <span>{state?.user?.name}</span>
+              <p>{state?.user?.name}</p>
             </div>
             <div>
               <p style={textRed}>Email</p>
