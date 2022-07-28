@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
 import { Link, useNavigate } from "react-router-dom";
@@ -7,20 +7,61 @@ import { Col, Row } from "react-bootstrap";
 // import { fakeCategory } from "../../fakeCategory";
 
 import { API } from "../../config/api";
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
+import DeleteData from "../modal/DeleteData";
 
 const TableCategoryProduct = () => {
   let navigate = useNavigate();
+  const [show, setShow] = useState(false);
 
-  let { data: categories } = useQuery("categoriesCache", async () => {
+  //modal delete
+
+  const [idDelete, setIdDelete] = useState(null);
+  const [confirmDelete, setConfirmDelete] = useState(null);
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+
+  let { data: categories, refetch } = useQuery("categoryCache", async () => {
     const response = await API.get("/categories");
-    //console.log(response.data.data.categories);
-    return response.data.data.categories;
+    //console.log(response);
+    return response.data.data;
   });
+
+  console.log(categories);
 
   const addCategory = () => {
     navigate("/AddCategory");
   };
+
+  const handleEdit = (id) => {
+    navigate("/EditCategory/" + id);
+  };
+
+  const handleDelete = (id) => {
+    setIdDelete(id);
+    handleShow();
+  };
+
+  // If confirm is true, execute delete data
+  const deleteById = useMutation(async (id) => {
+    try {
+      await API.delete(`/category/${id}`);
+      refetch();
+    } catch (error) {
+      console.log(error);
+    }
+  });
+
+  useEffect(() => {
+    if (confirmDelete) {
+      // Close modal confirm delete data
+      handleClose();
+      // execute delete data by id function
+      deleteById.mutate(idDelete);
+      setConfirmDelete(null);
+    }
+  }, [confirmDelete]);
 
   return (
     <div>
@@ -57,24 +98,29 @@ const TableCategoryProduct = () => {
               </thead>
               <tbody>
                 {categories?.map((item, index) => (
-                  <tr>
+                  <tr key={index}>
                     <td>{index + 1}</td>
                     <td>{item.name}</td>
                     <td>
-                      <Link to="/EditCategory">
-                        <Button style={{ width: "150px" }} variant="success">
-                          Edit
-                        </Button>
-                      </Link>
-                      <Link to="/EditCategory">
-                        <Button
-                          className="ms-2"
-                          style={{ width: "150px" }}
-                          variant="danger"
-                        >
-                          Delete
-                        </Button>
-                      </Link>
+                      <Button
+                        onClick={() => {
+                          handleEdit(item.id);
+                        }}
+                        style={{ width: "150px" }}
+                        variant="success"
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        className="ms-2"
+                        style={{ width: "150px" }}
+                        variant="danger"
+                        onClick={() => {
+                          handleDelete(item.id);
+                        }}
+                      >
+                        Delete
+                      </Button>
                     </td>
                   </tr>
                 ))}
@@ -89,6 +135,11 @@ const TableCategoryProduct = () => {
           )}
         </Row>
       </div>
+      <DeleteData
+        setConfirmDelete={setConfirmDelete}
+        show={show}
+        handleClose={handleClose}
+      />
     </div>
   );
 };

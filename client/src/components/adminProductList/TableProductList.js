@@ -1,64 +1,80 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Table from "react-bootstrap/Table";
-import Modal from "react-bootstrap/Modal";
+//import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Col, Row } from "react-bootstrap";
-import { home } from "../../dataDummy";
-import ShowMoreText from "react-show-more-text";
-import { useQuery } from "react-query";
+//import { home } from "../../dataDummy";
+//import ShowMoreText from "react-show-more-text";
+import { useMutation, useQuery } from "react-query";
 
 import { API } from "../../config/api";
+import DeleteData from "../modal/DeleteData";
 
 const TableListProduct = () => {
   const navigate = useNavigate();
   const [show, setShow] = useState(false);
 
-  let { data: products } = useQuery("productsCache", async () => {
+  let { data: products, refetch } = useQuery("productsCache", async () => {
     const response = await API.get("/products");
 
     // console.log(response.data.data);
     return response.data.data.product;
   });
 
-  console.log(products);
+  //console.log(products);
+
+  const [idDelete, setIdDelete] = useState(null);
+  const [confirmDelete, setConfirmDelete] = useState(null);
 
   const handleClose = () => setShow(false);
-  const handleSave = () => {
-    setShow(false);
-    navigate("/ListProduct");
-  };
   const handleShow = () => setShow(true);
 
   const addProduct = () => {
     navigate("/AddProduct");
   };
 
+  const handleUpdate = (id) => {
+    navigate("/EditProduct/" + id);
+  };
+
+  const handleDelete = (id) => {
+    setIdDelete(id);
+    handleShow();
+  };
+
+  const deleteById = useMutation(async (id) => {
+    try {
+      await API.delete(`/product/${id}`);
+      refetch();
+    } catch (error) {
+      console.log(error);
+    }
+  });
+
+  // Call function for handle close modal and execute delete data with useEffect here ...
+  useEffect(() => {
+    if (confirmDelete) {
+      // Close modal confirm delete data
+      handleClose();
+      // execute delete data by id function
+      deleteById.mutate(idDelete);
+      setConfirmDelete(null);
+    }
+  }, [confirmDelete]);
+
   return (
     <div>
-      <div>
-        <div>
-          <Modal show={show} onHide={handleClose}>
-            <Modal.Header closeButton>
-              <Modal.Title>Delete Comfirmation</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>Are You Sure You Want To Delete This ?</Modal.Body>
-            <Modal.Footer>
-              <Button variant="secondary" onClick={handleClose}>
-                Close
-              </Button>
-              <Button variant="success" onClick={handleSave}>
-                Yes
-              </Button>
-            </Modal.Footer>
-          </Modal>
-        </div>
-      </div>
+      <DeleteData
+        setConfirmDelete={setConfirmDelete}
+        show={show}
+        handleClose={handleClose}
+      />
       <div className="p-5 mx-5 my-3">
         <Row>
           <Col>
             <h2 style={{ color: "white" }} className="mb-3">
-              List Category
+              List Product
             </h2>
           </Col>
           <Col className="text-end">
@@ -92,7 +108,7 @@ const TableListProduct = () => {
               <tbody>
                 {products?.map((item, index) => (
                   <tr>
-                    <td>1</td>
+                    <td>{index + 1}</td>
                     <td>
                       <img
                         src={item.image}
@@ -115,17 +131,23 @@ const TableListProduct = () => {
                       style={{ height: "80px" }}
                     >
                       <div>
-                        <Link to="/EditProduct">
-                          <Button style={{ width: "80px" }} variant="success">
-                            Edit
-                          </Button>
-                        </Link>
+                        <Button
+                          style={{ width: "80px" }}
+                          variant="success"
+                          onClick={() => {
+                            handleUpdate(item.id);
+                          }}
+                        >
+                          Edit
+                        </Button>
                       </div>
                       <div className="ms-2">
                         <Button
                           style={{ width: "80px" }}
                           variant="danger"
-                          onClick={handleShow}
+                          onClick={() => {
+                            handleDelete(item.id);
+                          }}
                         >
                           Delete
                         </Button>

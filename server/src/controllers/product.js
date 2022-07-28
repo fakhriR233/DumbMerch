@@ -1,4 +1,4 @@
-const { products, Users, category, productCategory } = require("../../models");
+const { products, Users, category, productcategory } = require("../../models");
 
 exports.getProduct = async (req, res) => {
   try {
@@ -15,7 +15,7 @@ exports.getProduct = async (req, res) => {
           model: category,
           as: "categories",
           through: {
-            model: productCategory,
+            model: productcategory,
             as: "bridge",
             attributes: {
               exclude: ["createdAt", "updatedAt"],
@@ -80,17 +80,17 @@ exports.addProduct = async (req, res) => {
         return { idProduct: newProduct.id, idCategory: parseInt(item) };
       });
 
-      await productCategory.bulkCreate(productCategoryData);
+      await productcategory.bulkCreate(productCategoryData);
     }
 
-    let productData = await product.findOne({
+    let productData = await products.findOne({
       where: {
         id: newProduct.id,
       },
       include: [
         {
-          model: user,
-          as: "user",
+          model: Users,
+          as: "Users",
           attributes: {
             exclude: ["createdAt", "updatedAt", "password"],
           },
@@ -99,7 +99,7 @@ exports.addProduct = async (req, res) => {
           model: category,
           as: "categories",
           through: {
-            model: "product-category",
+            model: productcategory,
             as: "bridge",
             attributes: [],
           },
@@ -149,7 +149,7 @@ exports.showProduct = async (req, res) => {
           model: category,
           as: "categories",
           through: {
-            model: productCategory,
+            model: productcategory,
             as: "bridge",
             attributes: [],
           },
@@ -191,20 +191,53 @@ exports.showProduct = async (req, res) => {
 exports.updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
+    let { categoryId } = req.body;
+    categoryId = await categoryId.split(",");
 
-    await products.update(req.body, {
+    const data = {
+      name: req?.body?.name,
+      desc: req?.body?.desc,
+      price: req?.body?.price,
+      image: req?.file?.filename,
+      qty: req?.body?.qty,
+      idUser: req?.Users?.id,
+    };
+
+    await productcategory.destroy({
+      where: {
+        idProduct: id,
+      },
+    });
+
+    let productCategoryData = [];
+    if (categoryId !== 0 && categoryId[0] !== "") {
+      productCategoryData = categoryId.map((item) => {
+        return { idProduct: parseInt(id), idCategory: parseInt(item) };
+      });
+    }
+
+    if (productCategoryData.length !== 0) {
+      await productcategory.bulkCreate(productCategoryData);
+    }
+
+    await products.update(data, {
       where: { id },
     });
 
-    res.send({
+    res.status(200).send({
       status: "Success",
-      message: `Updating product with id : ${id}`,
+      message: `Updating product success`,
+      data: {
+        id,
+        data,
+        image: req?.file?.filename,
+      },
     });
   } catch (error) {
     console.log(error);
-    res.send({
+    res.status(400).send({
       status: "Failed!",
-      message: `Server Error, Failed to update product with id : ${id}`,
+      message: `Server Error, Failed to update product`,
     });
   }
 };

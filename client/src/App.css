@@ -93,3 +93,23 @@
   line-height: 22px;
   max-width: 400px;
 }
+
+.input-edit-category {
+  width: 100%;
+  background: rgba(210, 210, 210, 0.25);
+  border: 2px solid #bcbcbc;
+  box-sizing: border-box;
+  border-radius: 5px;
+  padding: 5px 10px;
+  color: #ffffff;
+}
+
+.label-file-add-product {
+  background: #f74d4d;
+  color: white;
+  padding: 0.5rem 1rem;
+  font-family: sans-serif;
+  border-radius: 0.3rem;
+  cursor: pointer;
+  margin-top: 1rem;
+}

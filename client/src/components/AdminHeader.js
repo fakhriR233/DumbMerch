@@ -27,6 +27,10 @@ const AdminHeader = () => {
     Navigate("/ListProduct");
   }
 
+  function homeHandler() {
+    Navigate("/ListCategory");
+  }
+
   return (
     <div>
       <Navbar
@@ -38,7 +42,12 @@ const AdminHeader = () => {
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="me-auto ms-5">
-            <img src={Logo} alt="Dumbmerch Logo" style={Styles.LogoSize} />
+            <img
+              src={Logo}
+              alt="Dumbmerch Logo"
+              style={Styles.LogoSize}
+              onClick={homeHandler}
+            />
           </Nav>
           <Nav className="me-5">
             <Nav.Link className="mx-3" onClick={complainHandler}>
@@ -64,6 +73,7 @@ const Styles = {
   LogoSize: {
     width: "70px",
     margin: "15px",
+    cursor: "pointer",
   },
 };
 

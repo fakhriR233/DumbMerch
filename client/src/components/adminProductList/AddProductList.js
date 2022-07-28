@@ -1,38 +1,38 @@
-import React, { useState, useEffect } from 'react'
-import { Container, Row, Col, Button, Alert } from 'react-bootstrap';
-import { useNavigate } from 'react-router';
-import { useMutation } from 'react-query';
+import React, { useState, useEffect } from "react";
+import { Container, Row, Col, Button, Alert } from "react-bootstrap";
+import { useNavigate } from "react-router";
+import { useMutation } from "react-query";
 
-import AdminHeader from '../AdminHeader';
+import AdminHeader from "../AdminHeader";
 
-import { API } from '../../config/api';
+import { API } from "../../config/api";
+import CheckBox from "../form/checkBox";
 
 const AddProductList = () => {
+  let navigate = useNavigate();
 
-    let navigate = useNavigate();
+  const [categories, setCategories] = useState([]); //Store all category data
+  const [categoryId, setCategoryId] = useState([]); //Save the selected category id
+  const [preview, setPreview] = useState(null); //For image preview
 
-    const [categories, setCategories] = useState([]); //Store all category data
-    const [categoryId, setCategoryId] = useState([]); //Save the selected category id
-    const [preview, setPreview] = useState(null); //For image preview
+  const [form, setForm] = useState({
+    name: "",
+    image: "",
+    desc: "",
+    price: "",
+    qty: "",
+  });
 
-    const [form, setForm] = useState({
-        name: '',
-        image: '',
-        desc: '',
-        price: '',
-        qty: '',
-      });
+  const getCategories = async () => {
+    try {
+      const response = await API.get("/categories");
+      setCategories(response.data.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-      const getCategories = async () => {
-        try {
-          const response = await API.get('/categories');
-          setCategories(response.data.data.categories);
-        } catch (error) {
-          console.log(error);
-        }
-      };
-
-      // For handle if category selected
+  // For handle if category selected
   const handleChangeCategoryId = (e) => {
     const id = e.target.value;
     const checked = e.target.checked;
@@ -54,62 +54,64 @@ const AddProductList = () => {
     setForm({
       ...form,
       [e.target.name]:
-        e.target.type === 'file' ? e.target.files : e.target.value,
+        e.target.type === "file" ? e.target.files : e.target.value,
     });
 
     // Create image url for preview
-    if (e.target.type === 'file') {
-        let url = URL.createObjectURL(e.target.files[0]);
-        setPreview(url);
-      }
-    };
+    if (e.target.type === "file") {
+      let url = URL.createObjectURL(e.target.files[0]);
+      setPreview(url);
+    }
+  };
 
-    const [message, setMessage] = useState(null);
+  const [message, setMessage] = useState(null);
 
-    // Create function for handle insert product data with useMutation here ...
+  // Create function for handle insert product data with useMutation here ...
   const handleSubmit = useMutation(async (e) => {
     try {
       e.preventDefault();
-  
+
       // Configuration Content-type
       const config = {
+        method: "POST",
         headers: {
-          'Content-type': 'multipart/form-data',
+          "Content-type": "multipart/form-data",
         },
       };
-  
-      const formData = new FormData()
-      formData.set("image", form.image[0], form.image[0].name)
-      formData.set("name", form.name)
-      formData.set("desc", form.desc)
-      formData.set("price", form.price)
-      formData.set("qty", form.qty)
-      formData.set("categoryId", form.categoryId)
+
+      const formData = new FormData();
+      formData.set("image", form?.image[0], form?.image[0].name);
+      formData.set("name", form.name);
+      formData.set("desc", form.desc);
+      formData.set("price", form.price);
+      formData.set("qty", form.qty);
+      formData.set("categoryId", categoryId);
       console.log(form);
-      console.log(formData);
+      //console.log(formData);
 
       // Insert data user to database
-      const response = await API.post('/product', formData, config);
+      const response = await API.post("/product", formData, config);
       console.log(response);
+
+      navigate("/ListProduct");
       // Handling response here
 
-      if(response.data.status === "Success") {
+      if (response.data.status === "Success") {
         const alert = (
-          <Alert variant='success' className='py-1'>
+          <Alert variant="success" className="py-1">
             {response.data.status}
           </Alert>
-        )
-        setMessage(alert)
+        );
+        setMessage(alert);
         setForm({
-            name: '',
-            image: '',
-            desc: '',
-            price: '',
-            qty: '',
-        })
+          name: "",
+          image: "",
+          desc: "",
+          price: "",
+          qty: "",
+        });
       }
-
-    } catch (error) {      
+    } catch (error) {
       console.log(error);
     }
   });
@@ -120,12 +122,12 @@ const AddProductList = () => {
 
   return (
     <div>
-        <AdminHeader/>
-        <Container className="py-5">
+      <AdminHeader />
+      <Container className="py-5">
         <Row>
           <Col xs="12">
             <div className="mb-4" style={Style.textHeaderCategory}>
-                Add Product
+              Add Product
             </div>
           </Col>
           <Col xs="12">
@@ -135,9 +137,9 @@ const AddProductList = () => {
                   <img
                     src={preview}
                     style={{
-                      maxWidth: '150px',
-                      maxHeight: '150px',
-                      objectFit: 'cover',
+                      maxWidth: "150px",
+                      maxHeight: "150px",
+                      objectFit: "cover",
                     }}
                     alt={preview}
                   />
@@ -188,18 +190,22 @@ const AddProductList = () => {
               <div className="card-form-input mt-4 px-2 py-1 pb-2">
                 <div
                   className="text-secondary mb-1"
-                  style={{ fontSize: '15px' }}
+                  style={{ fontSize: "15px" }}
                 >
                   Category
                 </div>
-                {categories?.map((item, index) => (
-                  <label className="me-4" key={index} style={{ color: "white"}}>
+                {categories.map((item, index) => (
+                  <label
+                    className="checkbox-inline me-4"
+                    key={index}
+                    style={{ color: "white" }}
+                  >
                     <input
                       type="checkbox"
-                      value={item?.id}
+                      value={item.id}
                       onClick={handleChangeCategoryId}
-                    />{' '}
-                    {item?.name}
+                    />{" "}
+                    {item.name}
                   </label>
                 ))}
               </div>
@@ -213,47 +219,46 @@ const AddProductList = () => {
           </Col>
         </Row>
       </Container>
-        
     </div>
-  )
-}
+  );
+};
 
 const Style = {
-    textHeaderCategory: {
-        fontStyle: "normal",
-        fontWeight: 600,
-        fontSize: "24px",
-        lineHeight: "33px",
-        color: "white"
-    },
-    labelFileAddProduct: {
-        background: "#f74d4d",
-        color: "white",
-        padding: "0.5rem 1rem",
-        fontFamily: "sans-serif",
-        borderRadius: "0.3rem",
-        cursor: "pointer",
-        marginTop: "1rem"
-    },
-    inputEditCategory: {
-        width: "100%",
-        background: "rgba(210, 210, 210, 0.25)",
-        border: "2px solid #bcbcbc",
-        boxSizing: "border-box",
-        borderRadius: "5px",
-        padding: "5px 10px",
-        color: "white"
-    },
-    inputEditCategoryDesc: {
-        width: "100%",
-        background: "rgba(210, 210, 210, 0.25)",
-        border: "2px solid #bcbcbc",
-        boxSizing: "border-box",
-        borderRadius: "5px",
-        padding: "5px 10px",
-        color: "white",
-        height: '130px'
-    }
-}
+  textHeaderCategory: {
+    fontStyle: "normal",
+    fontWeight: 600,
+    fontSize: "24px",
+    lineHeight: "33px",
+    color: "white",
+  },
+  labelFileAddProduct: {
+    background: "#f74d4d",
+    color: "white",
+    padding: "0.5rem 1rem",
+    fontFamily: "sans-serif",
+    borderRadius: "0.3rem",
+    cursor: "pointer",
+    marginTop: "1rem",
+  },
+  inputEditCategory: {
+    width: "100%",
+    background: "rgba(210, 210, 210, 0.25)",
+    border: "2px solid #bcbcbc",
+    boxSizing: "border-box",
+    borderRadius: "5px",
+    padding: "5px 10px",
+    color: "white",
+  },
+  inputEditCategoryDesc: {
+    width: "100%",
+    background: "rgba(210, 210, 210, 0.25)",
+    border: "2px solid #bcbcbc",
+    boxSizing: "border-box",
+    borderRadius: "5px",
+    padding: "5px 10px",
+    color: "white",
+    height: "130px",
+  },
+};
 
-export default AddProductList
+export default AddProductList;

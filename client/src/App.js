@@ -91,9 +91,17 @@ function App() {
           <Route exact path="/ListProduct" element={<ProductListScreen />} />
           <Route exact path="/ComplainAdmin" element={<ComplainAdmin />} />
           <Route exact path="/AddProduct" element={<AddProductList />} />
-          <Route exact path="/EditCategory" element={<EditCategoryScreen />} />
+          <Route
+            exact
+            path="/EditCategory/:id"
+            element={<EditCategoryScreen />}
+          />
           <Route exact path="/AddCategory" element={<AddCategory />} />
-          <Route exact path="/EditProduct" element={<EditProductScreen />} />
+          <Route
+            exact
+            path="/EditProduct/:id"
+            element={<EditProductScreen />}
+          />
           <Route path="/HomeScreen" element={<HomeScreen />} />
           <Route path="/ProfileScreen" element={<MyProfileScreen />} />
           <Route path="/Complain" element={<ComplainScreen />} />

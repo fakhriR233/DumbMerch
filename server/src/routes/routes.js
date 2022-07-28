@@ -45,7 +45,7 @@ router.delete("/user/:id", deleteUser);
 router.get("/products", auth, getProduct);
 router.get("/product/:id", auth, showProduct);
 router.post("/product", auth, uploadFile("image"), addProduct);
-router.patch("/product/:id", auth, updateProduct);
+router.patch("/product/:id", auth, uploadFile("image"), updateProduct);
 router.delete("/product/:id", auth, deleteProduct);
 
 //transactions

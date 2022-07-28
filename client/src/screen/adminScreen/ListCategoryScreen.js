@@ -1,5 +1,5 @@
 import React from "react";
-import TableList from "../../components/adminCategoryProduct/TableCategoryProduct";
+import TableCategoryProduct from "../../components/adminCategoryProduct/TableCategoryProduct";
 import AdminHeader from "../../components/AdminHeader";
 
 const ListCategoryScreen = () => {
@@ -8,7 +8,7 @@ const ListCategoryScreen = () => {
       <AdminHeader />
       <div>
         <div>
-          <TableList />
+          <TableCategoryProduct />
         </div>
       </div>
     </div>
